@@ -3,7 +3,7 @@ Trabalho acadêmico realizado durante o 4 semestre do curso de analise e desenvo
 
 # 💬 Trabalho 1: Miniblog
 ## Instruções
-  ### Antes de começar, leiam atentamente as instruções! ;)
+  ### Antes de começar, leiam atentamente as instruções! ;
   ## Entrega:
   # ⚠ IMPORTANTE ⚠ 
 1) Você deve realizar a entrega pelo moodle. Ao finalizar o projeto disponibilizar um link para o surge e o link para o repositório no github.
