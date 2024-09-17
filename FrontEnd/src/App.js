@@ -1,47 +1,64 @@
-import React, { useState, useEffect } from 'react';
-import './styles/App.css'; // Certifique-se que o caminho do CSS esteja correto
-import PostForm from './components/PostForm'; // Certifique-se que o caminho esteja correto
+import React, { useState } from 'react';
+
+import PostForm from './components/PostForm';
 import PostList from './components/PostList';
+import Modal from './components/Modal';
+
+import './styles/app.css';
 
 function App() {
   const [posts, setPosts] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [editingPost, setEditingPost] = useState(null);
 
-  // Função para buscar postagens do backend
-  useEffect(() => {
-    fetch('http://localhost:5000/posts')
-      .then((response) => response.json())
-      .then((data) => setPosts(data))
-      .catch((error) => console.error('Erro ao carregar postagens:', error));
-  }, []);
-
-  // Função para adicionar um novo post
-  const addPost = (post) => {
-    fetch('http://localhost:5000/posts', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(post),
-    })
-      .then((response) => response.json())
-      .then((newPost) => setPosts((prevPosts) => [...prevPosts, newPost]))
-      .catch((error) => console.error('Erro ao adicionar postagem:', error));
+  const handleAddOrUpdatePost = (newPost) => {
+    if (editingPost) {
+      setPosts(
+        posts.map((post) => (post.id === editingPost.id ? newPost : post))
+      );
+      setEditingPost(null);
+    }
+    else {
+      setPosts([newPost, ...posts]);
+    }
+    setShowForm(false);
   };
 
-  // Função para deletar um post
-  const deletePost = (id) => {
-    fetch(`http://localhost:5000/posts/${id}`, {
-      method: 'DELETE',
-    })
-      .then(() => setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id)))
-      .catch((error) => console.error('Erro ao deletar postagem:', error));
+  const handleEditPost = (post) => {
+    setEditingPost(post);
+    setShowForm(true);
+  };
+
+
+  const handleDeletePost = (id) => {
+    setPosts(posts.filter((post) => post.id !== id));
   };
 
   return (
     <div className="App">
-      <h1>Mini Blog</h1>
-      <PostForm onPost={addPost} />
-      <PostList posts={posts} onDelete={deletePost} />
+      <div className="sidebar">
+  <h2>Redes Sociais</h2>
+  <ul className="social-links">
+    <li><a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+    <li><a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+    <li><a href="mailto:seuemail@gmail.com">Email</a></li>
+    <li><a href="https://wa.me/seunumerowhatsapp" target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
+  </ul>
+</div>
+
+
+      <main className="content">
+        <button onClick={() => setShowForm(true)} className="add-post-btn">Adicionar Postagem</button>
+
+        <Modal isOpen={showForm} onClose={() => setShowForm(false)}>
+          <PostForm
+            onAddPost={handleAddOrUpdatePost}
+            editingPost={editingPost}
+          />
+        </Modal>
+
+        <PostList posts={posts} onEdit={handleEditPost} onDelete={handleDeletePost} />
+      </main>
     </div>
   );
 }
