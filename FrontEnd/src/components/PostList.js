@@ -1,51 +1,151 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import logo from '../img/logo.svg';
 
-const PostList = ({ posts, onEdit, onDelete }) => {
-  const [selectedPost, setSelectedPost] = useState(null);
+const PostItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  overflow: hidden;
+`;
+
+const PostImage = styled.img`
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-right: 20px;
+  margin-top: 10px;
+`;
+
+const PostContent = styled.div`
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+`;
+
+const PostTitle = styled.h2`
+  font-size: 1.5rem;
+  color: #333;
+  margin: 0;
+  margin-bottom: 10px;
+`;
+
+const PostText = styled.p`
+  font-size: 16px;
+  color: #666;
+  margin: 10px 0;
+  line-height: 1.5;
+  max-height: ${({ isFullContent }) => (isFullContent ? 'none' : '100px')};
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: ${({ isFullContent }) => (isFullContent ? 'none' : '3')};
+`;
+
+const ReadMoreButton = styled.button`
+  margin-top: 10px;
+  padding: 8px 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+
+const Modal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 50px;
+  overflow-y: auto;
+  z-index: 1000;
+`;
+
+const ModalContent = styled.div`
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+`;
+
+const ModalTitle = styled.h2`
+  margin: 0;
+`;
+
+const ModalText = styled.p`
+  margin: 10px 0;
+`;
+
+const ModalCloseButton = styled.button`
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+
+  &:hover {
+    background: #0056b3;
+  }
+`;
+
+const PostList = ({ posts }) => {
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [currentPost, setCurrentPost] = useState(null);
 
   const handleReadMore = (post) => {
-    setSelectedPost(post);
+    setCurrentPost(post);
+    setModalOpen(true);
   };
 
   const handleCloseModal = () => {
-    setSelectedPost(null);
+    setModalOpen(false);
+    setCurrentPost(null);
   };
 
-  if (posts.length === 0) {
-    return <p>Nenhuma postagem disponível.</p>;
-  }
-
   return (
-    <div>
+    <>
       {posts.map((post) => (
         <PostItem key={post.id}>
-          <PostImage src={post.imageUrl || logo} alt="Post thumbnail" />
+          <PostImage src={post.image} alt={post.title} />
           <PostContent>
             <PostTitle>{post.title}</PostTitle>
-            <PostText longText={post.content.length > 200}>
-              {post.content}
-            </PostText>
-            {post.content.length > 200 && (
-              <Button onClick={() => handleReadMore(post)}>Leia mais</Button>
-            )}
-            <Button onClick={() => onEdit(post)}>Editar</Button>
-            <Button onClick={() => onDelete(post.id)}>Excluir</Button>
+            <PostText>{post.description}</PostText>
+            <ReadMoreButton onClick={() => handleReadMore(post)}>Leia mais</ReadMoreButton>
           </PostContent>
         </PostItem>
       ))}
-      
-      {selectedPost && (
-        <Modal onClick={handleCloseModal}>
-          <ModalContent onClick={(e) => e.stopPropagation()}>
-            <PostTitle>{selectedPost.title}</PostTitle>
-            <PostText>{selectedPost.content}</PostText>
-            <ModalClose onClick={handleCloseModal}>X</ModalClose>
+
+      {isModalOpen && currentPost && (
+        <Modal>
+          <ModalContent>
+            <ModalTitle>{currentPost.title}</ModalTitle>
+            <ModalText>{currentPost.description}</ModalText>
+            <ModalCloseButton onClick={handleCloseModal}>Fechar</ModalCloseButton>
           </ModalContent>
         </Modal>
       )}
-    </div>
+    </>
   );
 };
 

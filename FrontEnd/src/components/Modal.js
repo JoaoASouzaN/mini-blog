@@ -1,18 +1,51 @@
 import React from 'react';
-import '../styles/modal.css'; // Arquivo CSS para estilização da modal
+import styled from 'styled-components';
 
-const Modal = ({ children, isOpen, onClose }) => {
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 50px;
+  overflow-y: auto;
+`;
+
+const ModalContent = styled.div`
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  position: relative;
+  width: 80%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+`;
+
+const ModalCloseButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+`;
+
+const Modal = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <button className="modal-close" onClick={onClose}>
-          Fechar
-        </button>
+    <ModalOverlay>
+      <ModalContent>
+        <ModalCloseButton onClick={onClose}>X</ModalCloseButton>
         {children}
-      </div>
-    </div>
+      </ModalContent>
+    </ModalOverlay>
   );
 };
 
