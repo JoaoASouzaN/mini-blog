@@ -14,10 +14,10 @@ Trabalho acadêmico realizado durante o 4 semestre do curso de analise e desenvo
   - Validação de Inputs
 
 ## 🛠 Tecnologias:
-  - React
-  - GitHub
-  - Git
-  - Visual Studio Code
+  - React.
+  - GitHub.
+  - Git.
+  - Visual Studio Code.
   #### | Extenções:
     - fernandoescolar.vscode-solution-explorer
     - vscode-icons-team.vscode-icons
