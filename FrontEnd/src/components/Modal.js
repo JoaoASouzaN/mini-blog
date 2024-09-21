@@ -35,11 +35,12 @@ const ModalContent = styled.div`
 
 const ModalCloseButton = styled.button`
   position: absolute;
+  color: red;
   top: 10px;
   right: 10px;
   background: none;
   border: none;
-  font-size: 16px;
+  font-size: 32px;
   cursor: pointer;
 `;
 
@@ -48,7 +49,7 @@ const Description = styled.div`
   max-height: ${({ expanded }) => (expanded ? 'none' : '100px')};
   overflow: hidden;
   transition: max-height 0.3s ease;
-  word-wrap: break-word; /* Adiciona quebra de palavras longas */
+  word-wrap: break-word;
 `;
 
 const ReadMoreButton = styled.button`

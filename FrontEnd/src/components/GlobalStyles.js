@@ -9,7 +9,18 @@ const GlobalStyle = createGlobalStyle`
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    
   }
+
+  font-size: 16px;
+  color: #666;
+  margin: 10px 0;
+  line-height: 1.5;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-wrap: break-word;
 
   code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
