@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import PostForm from './components/PostForm';
+import Modal from './components/Modal';
 
 import styled from 'styled-components';
 import GlobalStyle from './components/GlobalStyles';
@@ -15,7 +16,7 @@ const AppContainer = styled.div`
   background-color: #f0f2f5;
 
   @media (max-width: 768px) {
-    flex-direction: column;
+    flex-direction: column; // Em telas menores, a barra lateral e o conteúdo principal ficarão em coluna
   }
 `;
 
@@ -58,6 +59,7 @@ const SidebarLink = styled.a`
 
   svg {
     margin-right: 10px;
+    font-size: 24px;
   }
 `;
 
@@ -66,12 +68,16 @@ const Content = styled.div`
   padding: 20px;
   background-color: white;
   border-radius: 10px;
-  margin-left: 20px;
+  width: calc(100% - 270px);
+  max-width: 1200px; // Define a largura máxima do contêiner
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-left: 20px;
 
   @media (max-width: 768px) {
     margin-left: 0;
     margin-top: 20px;
+    width: 100%;
+    padding: 10px;
   }
 `;
 
@@ -83,6 +89,9 @@ const AddPostButton = styled.button`
   border-radius: 5px;
   cursor: pointer;
   margin-bottom: 20px;
+  display: block; // Garante que o botão ocupe toda a largura disponível
+  margin-left: auto; // Centraliza o botão horizontalmente
+  margin-right: auto; // Centraliza o botão horizontalmente
 
   &:hover {
     background-color: #0056b3;
@@ -158,18 +167,19 @@ const ModalContent = styled.div`
 function App() {
   const [posts, setPosts] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [editingPost, setEditingPost] = useState(null);
+  const [currentPost, setCurrentPost] = useState(null);
 
-  const handleAddOrUpdatePost = (newPost) => {
-    if (editingPost) {
-      setPosts(
-        posts.map((post) => (post.id === editingPost.id ? newPost : post))
-      );
-      setEditingPost(null);
-    }
-    else {
-      setPosts([newPost, ...posts]);
-    }
+  const handleAddPost = (newPost) => {
+    newPost.id = Date.now(); // Gera ID único para o novo post
+    setPosts([newPost, ...posts]);
+    setShowForm(false);
+  };
+
+  const handleUpdatePost = (updatedPost) => {
+    setPosts(posts.map((post) => (post.id === updatedPost.id ? updatedPost : post)));
+    setEditingPost(null);
     setShowForm(false);
   };
 
@@ -178,9 +188,18 @@ function App() {
     setShowForm(true);
   };
 
-
   const handleDeletePost = (id) => {
     setPosts(posts.filter((post) => post.id !== id));
+  };
+
+  const handleReadMore = (post) => {
+    setCurrentPost(post);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setCurrentPost(null);
   };
 
   return (
@@ -190,19 +209,19 @@ function App() {
         <SidebarTitle>Redes Sociais</SidebarTitle>
         <SidebarList>
           <SidebarListItem>
-            <SidebarLink href="https://linkedin.com/in/seu-usuario" target="_blank">
+            <SidebarLink href="https://www.linkedin.com/in/joaoasouzan" target="_blank">
               <FontAwesomeIcon icon={faLinkedin} size="lg" />
               LinkedIn
             </SidebarLink>
           </SidebarListItem>
           <SidebarListItem>
-            <SidebarLink href="https://github.com/seu-usuario" target="_blank">
+            <SidebarLink href="https://github.com/JoaoASouzaN" target="_blank">
               <FontAwesomeIcon icon={faGithub} size="lg" />
               GitHub
             </SidebarLink>
           </SidebarListItem>
           <SidebarListItem>
-            <SidebarLink href="mailto:seu-email@example.com">
+            <SidebarLink href="mailto:joaoif.eletro@gmail.com">
               <FontAwesomeIcon icon={faEnvelope} size="lg" />
               Email
             </SidebarLink>
@@ -213,14 +232,18 @@ function App() {
         <AddPostButton onClick={() => setShowForm(true)}>
           Adicionar Postagem
         </AddPostButton>
-        {posts.map((post) => (
-          <PostItem key={post.id}>
-            <PostImage src={post.image} alt={post.title} />
+        {posts.map((post, index) => (
+          <PostItem key={post.id || index}>
+            <PostImage 
+              src={post.image && post.image.trim() !== "" ? post.image : `https://picsum.photos/seed/${post.id}/600/400`} 
+              alt={post.title} 
+            />
             <PostContent>
               <h2>{post.title}</h2>
               <p>{post.description}</p>
               <button onClick={() => handleEditPost(post)}>Editar</button>
               <button onClick={() => handleDeletePost(post.id)}>Excluir</button>
+              <button onClick={() => handleReadMore(post)}>Leia mais</button>
             </PostContent>
           </PostItem>
         ))}
@@ -229,12 +252,20 @@ function App() {
         <ModalOverlay>
           <ModalContent>
             <PostForm
+              onAddPost={handleAddPost}
+              onUpdatePost={handleUpdatePost}
+              onClose={() => setShowForm(false)}
               editingPost={editingPost}
-              handleAddOrUpdatePost={handleAddOrUpdatePost}
               setShowForm={setShowForm}
             />
           </ModalContent>
         </ModalOverlay>
+      )}
+      {showModal && currentPost && (
+        <Modal isOpen={showModal} onClose={handleCloseModal}>
+          <h2>{currentPost.title}</h2>
+          <p>{currentPost.description}</p>
+        </Modal>
       )}
     </AppContainer>
   );

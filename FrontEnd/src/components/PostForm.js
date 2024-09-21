@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-// Styled components para o modal
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -25,6 +24,11 @@ const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  @media (max-width: 768px) {
+    width: 95%; // Ajustar a largura do modal em dispositivos menores
+    padding: 20px; // Reduzir o padding em dispositivos menores
+  }
 `;
 
 const CloseButton = styled.button`
@@ -88,24 +92,38 @@ const SubmitButton = styled.button`
   }
 `;
 
-const PostForm = ({ onAddPost, onClose }) => {
+const PostForm = ({ onAddPost, onUpdatePost, onClose, editingPost }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [image, setImage] = useState('');
+
+  useEffect(() => {
+    if (editingPost) {
+      setTitle(editingPost.title);
+      setDescription(editingPost.description);
+      setImage(editingPost.image);
+    }
+  }, [editingPost]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (title && description) {
-      onAddPost({ title, description });
+      if (editingPost) {
+        onUpdatePost({ ...editingPost, title, description, image });
+      } else {
+        onAddPost({ title, description, image });
+      }
       setTitle('');
       setDescription('');
+      setImage('');
     }
   };
 
   return (
     <ModalOverlay>
       <ModalContent>
-        <CloseButton onClick={onClose}>&times;</CloseButton>
-        <h2>Criar Nova Postagem</h2>
+        <CloseButton onClick={onClose}>×</CloseButton>
+        <h2>{editingPost ? 'Editar Postagem' : 'Criar Nova Postagem'}</h2>
         <Form onSubmit={handleSubmit}>
           <Label htmlFor="title">Título</Label>
           <Input
@@ -126,7 +144,15 @@ const PostForm = ({ onAddPost, onClose }) => {
             placeholder="Digite a descrição da postagem"
             required
           />
-          <SubmitButton type="submit">Adicionar Postagem</SubmitButton>
+          <Label htmlFor="image">URL da Imagem</Label>
+          <Input
+            id="image"
+            type="text"
+            value={image}
+            onChange={(e) => setImage(e.target.value)}
+            placeholder="Digite a URL da imagem (opcional)"
+          />
+          <SubmitButton type="submit">{editingPost ? 'Salvar Alterações' : 'Adicionar Postagem'}</SubmitButton>
         </Form>
       </ModalContent>
     </ModalOverlay>
