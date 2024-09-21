@@ -10,7 +10,7 @@ Trabalho acadêmico realizado durante o 4 semestre do curso de analise e desenvo
 ## 🧾 Requisitos:
   - Componentização
   - Organização
-  - Responsiviodade
+  - Responsividade
   - Validação de Inputs
 
 ## 🛠 Tecnologias:
